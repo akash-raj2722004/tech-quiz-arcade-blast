@@ -7,20 +7,33 @@ type Team = {
   name: string;
 };
 
+type QuestionImage = {
+  url: string;
+  answer: string;
+};
+
 type GameState = 'waiting' | 'playing' | 'buzzed';
 
 interface GameContextType {
   teams: Team[];
   currentImage: string | null;
+  currentImageAnswer: string | null;
   buzzedTeam: Team | null;
   gameState: GameState;
   userTeam: Team | null;
-  isAdmin: boolean;
+  isAdmin: boolean | null;
+  showAnswer: boolean;
+  isFullscreen: boolean;
+  isAuthenticated: boolean;
   
   // Admin actions
   addTeam: (name: string) => void;
   resetBuzzer: () => void;
-  setCurrentImage: (imageUrl: string) => void;
+  setCurrentImage: (imageUrl: string, answer: string) => void;
+  toggleShowAnswer: () => void;
+  toggleFullscreen: () => void;
+  login: (username: string, password: string) => boolean;
+  logout: () => void;
   
   // Player actions
   joinGame: (teamName: string) => void;
@@ -34,15 +47,23 @@ interface GameContextType {
 const defaultGameContext: GameContextType = {
   teams: [],
   currentImage: null,
+  currentImageAnswer: null,
   buzzedTeam: null,
   gameState: 'waiting',
   userTeam: null,
-  isAdmin: false,
+  isAdmin: null,
+  showAnswer: false,
+  isFullscreen: false,
+  isAuthenticated: false,
   
   // These will be implemented in the provider
   addTeam: () => {},
   resetBuzzer: () => {},
   setCurrentImage: () => {},
+  toggleShowAnswer: () => {},
+  toggleFullscreen: () => {},
+  login: () => false,
+  logout: () => {},
   joinGame: () => {},
   pressBuzzer: () => {},
   setIsAdmin: () => {},
@@ -57,11 +78,15 @@ export const useGameContext = () => useContext(GameContext);
 // Provider component
 export const GameProvider = ({ children }: { children: ReactNode }) => {
   const [teams, setTeams] = useState<Team[]>([]);
-  const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [currentImage, setCurrentImageUrl] = useState<string | null>(null);
+  const [currentImageAnswer, setCurrentImageAnswer] = useState<string | null>(null);
   const [buzzedTeam, setBuzzedTeam] = useState<Team | null>(null);
   const [gameState, setGameState] = useState<GameState>('waiting');
   const [userTeam, setUserTeam] = useState<Team | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [showAnswer, setShowAnswer] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   // Sound effects (to be implemented with Socket.io later)
   const playBuzzerSound = () => {
@@ -82,6 +107,34 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const resetBuzzer = () => {
     setBuzzedTeam(null);
     setGameState('playing');
+    setShowAnswer(false);
+  };
+
+  const setCurrentImage = (imageUrl: string, answer: string) => {
+    setCurrentImageUrl(imageUrl);
+    setCurrentImageAnswer(answer);
+    setShowAnswer(false);
+  };
+
+  const toggleShowAnswer = () => {
+    setShowAnswer(prev => !prev);
+  };
+
+  const toggleFullscreen = () => {
+    setIsFullscreen(prev => !prev);
+  };
+
+  const login = (username: string, password: string): boolean => {
+    // Simple authentication
+    if (username === 'admin' && password === '12345') {
+      setIsAuthenticated(true);
+      return true;
+    }
+    return false;
+  };
+
+  const logout = () => {
+    setIsAuthenticated(false);
   };
 
   const joinGame = (teamName: string) => {
@@ -107,15 +160,23 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
   const value = {
     teams,
     currentImage,
+    currentImageAnswer,
     buzzedTeam,
     gameState,
     userTeam,
     isAdmin,
+    showAnswer,
+    isFullscreen,
+    isAuthenticated,
     
     // Admin actions
     addTeam,
     resetBuzzer,
     setCurrentImage,
+    toggleShowAnswer,
+    toggleFullscreen,
+    login,
+    logout,
     
     // Player actions
     joinGame,

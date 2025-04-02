@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { ZapIcon, AlertCircle, Image } from 'lucide-react';
 
 const PlayerPanel: React.FC = () => {
-  const { joinGame, userTeam, pressBuzzer, gameState, buzzedTeam, currentImage } = useGameContext();
+  const { joinGame, userTeam, pressBuzzer, gameState, buzzedTeam, currentImage, isFullscreen } = useGameContext();
   const [teamName, setTeamName] = useState('');
 
   const handleJoinGame = () => {
@@ -22,7 +22,9 @@ const PlayerPanel: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-md mx-auto gap-6">
+    <div className={`flex flex-col items-center justify-center w-full max-w-md mx-auto gap-6 ${
+      isFullscreen ? 'fixed top-0 left-0 w-full h-full z-50 bg-black p-4 max-w-none' : ''
+    }`}>
       {!userTeam ? (
         // Join Game Screen
         <div className="arcade-panel w-full p-6">
@@ -59,13 +61,13 @@ const PlayerPanel: React.FC = () => {
           
           {/* Current Question Display */}
           {currentImage && (
-            <div className="arcade-panel p-4">
+            <div className={`arcade-panel p-4 ${isFullscreen ? 'flex-grow' : ''}`}>
               <h3 className="text-lg mb-3 text-center text-arcade-light-purple">Current Question</h3>
               <div className="flex justify-center">
                 <img 
                   src={currentImage} 
                   alt="Question" 
-                  className="max-w-full max-h-[200px] rounded-lg object-contain mb-4" 
+                  className={`rounded-lg object-contain ${isFullscreen ? 'max-h-[60vh]' : 'max-h-[200px]'} mb-4`}
                   onError={(e) => {
                     console.error(`Failed to load image: ${currentImage}`);
                     e.currentTarget.src = '/placeholder.svg';
