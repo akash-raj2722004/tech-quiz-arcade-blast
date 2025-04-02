@@ -41,6 +41,12 @@ interface GameContextType {
   
   // View toggle
   setIsAdmin: (isAdmin: boolean) => void;
+  
+  // Socket.io integration methods
+  updateTeams: (teams: Team[]) => void;
+  updateBuzzedTeam: (team: Team | null) => void;
+  updateGameState: (state: GameState) => void;
+  updateShowAnswer: (show: boolean) => void;
 }
 
 // Default context state
@@ -67,6 +73,12 @@ const defaultGameContext: GameContextType = {
   joinGame: () => {},
   pressBuzzer: () => {},
   setIsAdmin: () => {},
+  
+  // Socket.io integration methods
+  updateTeams: () => {},
+  updateBuzzedTeam: () => {},
+  updateGameState: () => {},
+  updateShowAnswer: () => {},
 };
 
 // Create the context
@@ -102,22 +114,34 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       name,
     };
     setTeams([...teams, newTeam]);
+    
+    // SOCKET.IO INTEGRATION POINT:
+    // socket.emit('addTeam', newTeam);
   };
 
   const resetBuzzer = () => {
     setBuzzedTeam(null);
     setGameState('playing');
     setShowAnswer(false);
+    
+    // SOCKET.IO INTEGRATION POINT:
+    // socket.emit('resetBuzzer');
   };
 
   const setCurrentImage = (imageUrl: string, answer: string) => {
     setCurrentImageUrl(imageUrl);
     setCurrentImageAnswer(answer);
     setShowAnswer(false);
+    
+    // SOCKET.IO INTEGRATION POINT:
+    // socket.emit('setCurrentImage', { url: imageUrl, answer });
   };
 
   const toggleShowAnswer = () => {
     setShowAnswer(prev => !prev);
+    
+    // SOCKET.IO INTEGRATION POINT:
+    // socket.emit('toggleShowAnswer');
   };
 
   const toggleFullscreen = () => {
@@ -144,6 +168,9 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     };
     setTeams([...teams, newTeam]);
     setUserTeam(newTeam);
+    
+    // SOCKET.IO INTEGRATION POINT:
+    // socket.emit('joinGame', { id: newTeam.id, name: teamName });
   };
 
   const pressBuzzer = (teamId: string) => {
@@ -154,7 +181,27 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
       setBuzzedTeam(team);
       setGameState('buzzed');
       playBuzzerSound();
+      
+      // SOCKET.IO INTEGRATION POINT:
+      // socket.emit('pressBuzzer', teamId);
     }
+  };
+  
+  // Socket.io integration methods
+  const updateTeams = (newTeams: Team[]) => {
+    setTeams(newTeams);
+  };
+  
+  const updateBuzzedTeam = (team: Team | null) => {
+    setBuzzedTeam(team);
+  };
+  
+  const updateGameState = (state: GameState) => {
+    setGameState(state);
+  };
+  
+  const updateShowAnswer = (show: boolean) => {
+    setShowAnswer(show);
   };
 
   const value = {
@@ -184,6 +231,12 @@ export const GameProvider = ({ children }: { children: ReactNode }) => {
     
     // View toggle
     setIsAdmin,
+    
+    // Socket.io integration methods
+    updateTeams,
+    updateBuzzedTeam,
+    updateGameState,
+    updateShowAnswer,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
