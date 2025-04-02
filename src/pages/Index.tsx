@@ -5,11 +5,13 @@ import AdminPanel from '@/components/AdminPanel';
 import PlayerPanel from '@/components/PlayerPanel';
 import GameSetup from '@/components/GameSetup';
 import AdminLogin from '@/components/AdminLogin';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // Main Game component
 const Game: React.FC = () => {
   const { isAdmin, isAuthenticated } = useGameContext();
   const [showSetup, setShowSetup] = useState(true);
+  const isMobile = useIsMobile();
   
   // Listen for role selection
   useEffect(() => {
@@ -20,7 +22,7 @@ const Game: React.FC = () => {
   
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="game-title">Tech Quiz Arcade Blast</h1>
+      <h1 className={`game-title ${isMobile ? 'text-2xl' : 'text-3xl md:text-5xl'}`}>Tech Quiz Arcade Blast</h1>
       
       <div className="mt-6">
         {showSetup ? (

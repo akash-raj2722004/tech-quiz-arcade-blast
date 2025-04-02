@@ -87,7 +87,20 @@
   }
 
   .buzzer-btn {
-    @apply arcade-btn py-8 md:py-20 text-2xl md:text-4xl uppercase tracking-wider;
+    @apply relative overflow-hidden py-8 md:py-20 text-2xl md:text-4xl uppercase tracking-wider;
+    animation: pulse-glow 2s infinite;
+  }
+
+  .buzzer-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 60%);
+    opacity: 0;
+    animation: buzzer-shine 3s infinite;
   }
 
   .arcade-panel {
@@ -110,5 +123,28 @@
   .game-title {
     @apply text-3xl md:text-5xl text-center font-press-start bg-clip-text text-transparent 
     bg-gradient-to-r from-arcade-purple via-arcade-pink to-arcade-blue pt-4 pb-6 animate-glow;
+  }
+}
+
+@keyframes buzzer-shine {
+  0% {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  25% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: rotate(360deg);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(234,56,76,0.8);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(234,56,76,1);
   }
 }

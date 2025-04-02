@@ -4,10 +4,12 @@ import { useGameContext } from '@/lib/GameContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ZapIcon, AlertCircle, Image } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const PlayerPanel: React.FC = () => {
   const { joinGame, userTeam, pressBuzzer, gameState, buzzedTeam, currentImage, isFullscreen } = useGameContext();
   const [teamName, setTeamName] = useState('');
+  const isMobile = useIsMobile();
 
   const handleJoinGame = () => {
     if (teamName.trim()) {
@@ -81,7 +83,7 @@ const PlayerPanel: React.FC = () => {
             {gameState === 'playing' ? (
               <button 
                 onClick={handleBuzzerPress}
-                className="buzzer-btn"
+                className={`buzzer-btn w-full ${isMobile ? 'h-40' : 'h-32'} flex items-center justify-center rounded-full bg-gradient-to-r from-arcade-red to-arcade-orange text-white font-press-start text-xl md:text-3xl uppercase tracking-wider border-4 border-white shadow-[0_0_20px_rgba(234,56,76,0.8)] hover:shadow-[0_0_35px_rgba(234,56,76,1)] active:scale-95 transition-all`}
               >
                 <ZapIcon size={32} className="mr-2" />
                 BUZZ
