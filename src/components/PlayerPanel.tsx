@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { useGameContext } from '@/lib/GameContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ZapIcon, AlertCircle } from 'lucide-react';
+import { ZapIcon, AlertCircle, Image } from 'lucide-react';
 
 const PlayerPanel: React.FC = () => {
-  const { joinGame, userTeam, pressBuzzer, gameState, buzzedTeam } = useGameContext();
+  const { joinGame, userTeam, pressBuzzer, gameState, buzzedTeam, currentImage } = useGameContext();
   const [teamName, setTeamName] = useState('');
 
   const handleJoinGame = () => {
@@ -56,6 +56,24 @@ const PlayerPanel: React.FC = () => {
             <h2 className="text-xl neon-text mb-2">Team</h2>
             <div className="text-white text-2xl">{userTeam.name}</div>
           </div>
+          
+          {/* Current Question Display */}
+          {currentImage && (
+            <div className="arcade-panel p-4">
+              <h3 className="text-lg mb-3 text-center text-arcade-light-purple">Current Question</h3>
+              <div className="flex justify-center">
+                <img 
+                  src={currentImage} 
+                  alt="Question" 
+                  className="max-w-full max-h-[200px] rounded-lg object-contain mb-4" 
+                  onError={(e) => {
+                    console.error(`Failed to load image: ${currentImage}`);
+                    e.currentTarget.src = '/placeholder.svg';
+                  }}
+                />
+              </div>
+            </div>
+          )}
           
           <div className="arcade-panel p-4">
             {gameState === 'playing' ? (

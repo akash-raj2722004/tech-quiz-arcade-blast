@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ArrowLeft, Image, RefreshCw, Gamepad2 } from 'lucide-react';
 
 const AdminPanel: React.FC = () => {
-  const { teams, buzzedTeam, resetBuzzer, setCurrentImage, gameState } = useGameContext();
+  const { teams, buzzedTeam, resetBuzzer, setCurrentImage, gameState, currentImage } = useGameContext();
   const [availableImages, setAvailableImages] = useState<string[]>([
     '/images/question1.jpg',
     '/images/question2.jpg',
@@ -70,7 +70,9 @@ const AdminPanel: React.FC = () => {
                   {availableImages.map((img, index) => (
                     <Card 
                       key={index} 
-                      className="cursor-pointer border-2 hover:border-arcade-purple transition-all"
+                      className={`cursor-pointer border-2 transition-all ${
+                        currentImage === img ? 'border-arcade-purple' : 'hover:border-arcade-purple'
+                      }`}
                       onClick={() => handleImageSelect(img)}
                     >
                       <div className="h-12 flex items-center justify-center">
@@ -110,13 +112,23 @@ const AdminPanel: React.FC = () => {
       {/* Current Question Display Area */}
       <div className="arcade-panel min-h-[200px] md:min-h-[300px] flex flex-col items-center justify-center">
         <h2 className="text-xl mb-4 neon-text">Current Question</h2>
-        {/* This would display the current image/question */}
         <div className="w-full h-full flex items-center justify-center">
-          {/* Placeholder for question content */}
-          <div className="text-center text-gray-400">
-            <Image size={48} className="mx-auto mb-2" />
-            <p>Select an image to display the question</p>
-          </div>
+          {currentImage ? (
+            <img 
+              src={currentImage} 
+              alt="Current Question" 
+              className="max-w-full max-h-[250px] rounded-lg object-contain" 
+              onError={(e) => {
+                console.error(`Failed to load image: ${currentImage}`);
+                e.currentTarget.src = '/placeholder.svg';
+              }}
+            />
+          ) : (
+            <div className="text-center text-gray-400">
+              <Image size={48} className="mx-auto mb-2" />
+              <p>Select an image to display the question</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
